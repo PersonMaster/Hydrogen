@@ -18,6 +18,6 @@ You don't need to reload from the console u just save the file and its done.
 Go Beyond ur Creations with Skydrogen Addon Support!
 
 # Links
-[![Discord](https://img.shields.io/badge/Discord Server-Skydrogen-blue?style=flat-square)](https://discord.gg/GV3J8HvVCn)
-[![Website](https://img.shields.io/badge/Website-OmarOmar93-gray?style=flat-square)](https://omar-omar93.wixsite.com/skydrogen)
+[![Discord](https://img.shields.io/badge/Discord-Skydrogen-blue?style=flat-square)](https://discord.gg/GV3J8HvVCn)
+[![Website](https://img.shields.io/badge/Website-OmarOmar93-black?style=flat-square)](https://omar-omar93.wixsite.com/skydrogen)
 [![Youtube](https://img.shields.io/badge/Youtube-OmarOmar93-red?style=flat-square)](https://www.youtube.com/c/OmarOmar93)
