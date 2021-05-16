@@ -963,28 +963,6 @@ on flight toggle:
     set {_effect} to join {_rr::*} with ":"
     Hydrogen_executeEffect({_line}, {_effect}, "flightToggle", ("player:%event-player%"))
 
-on elytra toggle:
-  loop Hydrogen_callEvents("OnElytraToggle: "):
-    set {_cc::*} to split loop-value at ":"
-    delete {_cc::1}
-    set {_l} to join {_cc::*} with ":"
-    set {_a::*} to split {_l} at ","
-    if {_l} is "cancel":
-      cancel event
-      continue
-    else if {_a::2} is "cancel":
-      set {_p} to {_a::1}
-      replace all "%%player%%" in {_p} with "%player%"
-      set {_p} to {_a::1} parsed as an offline player
-      if {_p} is player:
-        cancel event
-      continue
-    set {_rr::*} to split loop-value at ":"
-    set {_line} to first element out of {_rr::*}
-    delete {_rr::1}
-    set {_effect} to join {_rr::*} with ":"
-    Hydrogen_executeEffect({_line}, {_effect}, "elytraToggle", ("player:%event-player%"))
-
 on explode:
   loop Hydrogen_callEvents("OnExplode: "):
     set {_cc::*} to split loop-value at ":"
