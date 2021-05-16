@@ -1,1 +1,1339 @@
-To be made..
+# [=] Script - Hydrogen
+#  Developer: TrueFusion
+#  Name: Hydrogen and fork of Skydrogen
+#  Discord: TrueFusion#2022
+#
+#   (!) DO NOT CHANGE (!)
+options:
+  version: releases
+#   (!) DO NOT CHANGE (!)
+#
+# [=] Script - Hydrogen
+#
+# |||                                                                                     |||
+# VVV Do not change unless you know what you are doing! This could break all of Hydrogen. VVV
+
+function Hydrogen_callEvents(event: string) :: strings:
+  if last character of {_event} is not " ":
+    set {_event} to "%{_event}% "
+  loop all the files in file path "plugins/Hydrogen/Code/":
+    delete {_i}
+    loop lines in file path "%loop-value%":
+      add 1 to {_i}
+      if loop-value-2 starts with {_event}:
+        add "%{_i}%:%subtext of loop-value-2 from characters ((length of {_event}) + 1) to (length of loop-value-2)%" to {_lines::*}
+    return {_lines::*}
+
+function Hydrogen_executeEffect(line: string, effect: string, event: string, data: strings=""):
+  set {_code::*} to split {_effect} at ","
+  loop {_data::*}:
+    set {_dataSplit::*} to split loop-value at ":"
+    set {_type} to {_dataSplit::1}
+    delete {_dataSplit::1}
+    set {_value} to join {_dataSplit::*} with ":"
+    set {_%{_type}%} to {_value}
+  if {_code::2} is "send":
+    if size of {_code::*} is 3:
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::3} with "%{_player}%"
+      replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::3} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+      replace all "%%block%%" in {_code::3} with {_block}
+      replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::3} with {_player}'s ip
+      replace all "%%item%%" in {_code::3} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::3} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+      send formatted {_code::3} to {_p}
+    else:
+      HydroLog("&cThe effect ""send"" needs to have 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::1} is "broadcast":
+    if size of {_code::*} is 2:
+      replace all "%%player%%" in {_code::2} with "%{_player}%"
+      replace all "%%sender%%" in {_code::2} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::2} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::2} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::2} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::2} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::2} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+      replace all "%%block%%" in {_code::2} with {_block}
+      replace all "%%gamemode%%" in {_code::2} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::2} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::2} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::2} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::2} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::2} with {_player}'s ip
+      replace all "%%item%%" in {_code::2} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::2} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::2} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::2} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::2} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::2} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+        replace all "%%block%%" in {_code::2} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::2} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::2} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::2} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::2} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::2} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::2} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::2} with {_victim}'s ip
+        replace all "%%item%%" in {_code::2} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::2} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::2} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::2} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::2} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::2} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::2} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::2} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::2} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::2} with {_attacker}'s ip
+      send formatted {_code::2} to all players
+    else:
+      HydroLog("&cThe effect ""broadcast"" needs to have 2 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "broadcastworld":
+    if size of {_code::*} is 3:
+      set {_world} to world({_code::1})
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::3} with "%{_player}%"
+      replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::3} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+      replace all "%%block%%" in {_code::3} with {_block}
+      replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::3} with {_player}'s ip
+      replace all "%%item%%" in {_code::3} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::3} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+      send formatted {_code::3} to all players in world {_world}
+    else:
+      HydroLog("&cThe effect ""broadcastworld"" needs to have 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "kick":
+    if size of {_code::*} is 3:
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      if {_code::3} is set:
+        replace all "%%player%%" in {_code::3} with "%{_player}%"
+        replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+        replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+        replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+        replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+        replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+        replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+        replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+        replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+        replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+        replace all "%%ip%%" in {_code::3} with {_player}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+        replace all "%%entity%%" in {_code::3} with {_entity}
+        if {_event} is "damage":
+          replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+          replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+          replace all "%%message%%" in {_code::3} with {_message}
+          replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+          replace all "%%block%%" in {_code::3} with {_block}
+          replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+          replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+          replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+          replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+          replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+          replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+          replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+          replace all "%%item%%" in {_code::3} with "%{_item}%"
+          replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+          replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+          replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+          replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+          replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+          replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+          replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+          replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+          replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+        set {_reason} to {_code::3}
+      else:
+        set {_reason} to "You have been kicked by Hydrogen."
+      kick {_p} due to formatted {_reason}
+    else:
+      HydroLog("&cThe effect ""kick"" needs to have 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "kill":
+    if size of {_code::*} is 2:
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%entity%%" in {_code::1} with {_entity}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      kill {_p}
+    else:
+      HydroLog("&cThe effect ""kill"" needs to have 2 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "gamemode":
+    if size of {_code::*} is 3:
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::3} with "%{_player}%"
+      replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::3} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+      replace all "%%block%%" in {_code::3} with {_block}
+      replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::3} with {_player}'s ip
+      replace all "%%item%%" in {_code::3} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::3} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+      set {_gmd} to {_code::3} parsed as a gamemode
+      if {_gmd} is a gamemode:
+        set {_p}'s gamemode to {_gmd}
+      else:
+        HydroLog("&cUnknown gamemode. Line: %{_line}%.&c Effect: %{_effect}%")
+    else:
+      HydroLog("&cThe effect ""gamemode"" needs to have 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "push":
+    if size of {_code::*} is 3 or 4:
+      if {_event} is "jump":
+        wait a tick
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::3} with "%{_player}%"
+      replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::3} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+      replace all "%%block%%" in {_code::3} with {_block}
+      replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::3} with {_player}'s ip
+      replace all "%%item%%" in {_code::3} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::3} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+      if {_code::3} is "up":
+        if {_code::4} is set:
+          push {_p} upwards at speed {_code::4} parsed as an integer
+        else:
+          push {_p} upwards at speed 1
+      else if {_code::3} is "down":
+        if {_code::4} is set:
+          push {_p} downwards at speed {_code::4} parsed as an integer
+        else:
+          push {_p} downwards at speed 1
+      else if {_code::3} is "backwards":
+        if {_code::4} is set:
+          push {_p} backwards at speed {_code::4} parsed as an integer
+        else:
+          push {_p} backwards at speed 1
+      else if {_code::3} is "forwards":
+        if {_code::4} is set:
+          push {_p} forwards at speed {_code::4} parsed as an integer
+        else:
+          push {_p} forwards at speed 1
+      else:
+        HydroLog("&cInput (up/down/backwards/forwards) in a ""push"" event. Line: %{_line}%.&c Effect: %{_effect}%")
+    else:
+      HydroLog("&cThe effect ""push"" needs to have at least 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "set":
+    if size of {_code::*} is 4:
+      if {_event} is "jump":
+        wait a tick
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::4} with "%{_player}%"
+      replace all "%%sender%%" in {_code::4} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::4} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::4} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::4} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::4} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::4} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::4} with newline
+      replace all "%%block%%" in {_code::4} with {_block}
+      replace all "%%gamemode%%" in {_code::4} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::4} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::4} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::4} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::4} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::4} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::4} with {_player}'s ip
+      replace all "%%item%%" in {_code::4} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::4} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::4} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::4} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::4} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::4} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::4} with newline
+        replace all "%%block%%" in {_code::4} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::4} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::4} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::4} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::4} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::4} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::4} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::4} with {_victim}'s ip
+        replace all "%%item%%" in {_code::4} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::4} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::4} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::4} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::4} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::4} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::4} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::4} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::4} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::4} with {_attacker}'s ip
+    if {_code::3} is "health":
+      if {_code::4} is set:
+        set {_p}'s health to {_code::4} parsed as an integer
+    else if {_code::3} is "hunger":
+      if {_code::4} is set:
+        set {_p}'s hunger to {_code::4} parsed as an integer
+    else if {_code::3} is "xp":
+      if {_code::4} is set:
+        set {_p}'s xp to {_code::4} parsed as an integer
+    else:
+      HydroLog("&cInput (health/hunger/xp) in the third section of a ""set"" effect. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::2} is "command":
+    if size of {_code::*} is 3:
+      replace all "%%player%%" in {_code::1} with {_player}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      replace all "%%attacker%%" in {_code::1} with {_attacker}
+      replace all "%%victim%%" in {_code::1} with {_victim}
+      set {_p} to {_code::1} parsed as an offline player
+      set {_player} to {_player} parsed as an offline player
+      set {_sender} to {_sender} parsed as an offline player
+      set {_attacker} to {_attacker} parsed as an offline player
+      set {_victim} to {_victim} parsed as an offline player
+      replace all "%%player%%" in {_code::3} with "%{_player}%"
+      replace all "%%sender%%" in {_code::3} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::3} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::3} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::3} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::3} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::3} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+      replace all "%%block%%" in {_code::3} with {_block}
+      replace all "%%gamemode%%" in {_code::3} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::3} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::3} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::3} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::3} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::3} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::3} with {_player}'s ip
+      replace all "%%item%%" in {_code::3} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::3} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::3} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::3} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::3} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::3} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::3} with newline
+        replace all "%%block%%" in {_code::3} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::3} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::3} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::3} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::3} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::3} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::3} with {_victim}'s ip
+        replace all "%%item%%" in {_code::3} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::3} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::3} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::3} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::3} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::3} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::3} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::3} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::3} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::3} with {_attacker}'s ip
+      make {_p} execute {_code::3}
+    else:
+      HydroLog("&cThe effect ""command"" needs to have 3 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::1} is "consolecommand":
+    if size of {_code::*} is 2:
+      replace all "%%player%%" in {_code::2} with "%{_player}%"
+      replace all "%%sender%%" in {_code::2} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::2} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::2} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::2} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::2} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::2} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+      replace all "%%block%%" in {_code::2} with {_block}
+      replace all "%%gamemode%%" in {_code::2} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::2} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::2} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::2} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::2} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::2} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::2} with {_player}'s ip
+      replace all "%%item%%" in {_code::2} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::2} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::2} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::2} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::2} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::2} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+        replace all "%%block%%" in {_code::2} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::2} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::2} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::2} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::2} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::2} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::2} with {_victim}'s ip
+        replace all "%%item%%" in {_code::2} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::2} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::2} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::2} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::2} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::2} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::2} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::2} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::2} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::2} with {_attacker}'s ip
+      make console execute {_code::2}
+    else:
+      HydroLog("&cThe effect ""consolecommand"" needs to have 2 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else if {_code::1} is "log":
+    if size of {_code::*} is 2:
+      replace all "%%player%%" in {_code::2} with "%{_player}%"
+      replace all "%%sender%%" in {_code::2} with "%{_sender}%"
+      replace all "%%attacker%%" in {_code::2} with "%{_attacker}%"
+      replace all "%%victim%%" in {_code::2} with "%{_victim}%"
+      replace all "%%prefix%%" in {_code::2} with formatted {_player}'s prefix
+      replace all "%%suffix%%" in {_code::2} with formatted {_player}'s suffix
+      replace all "%%message%%" in {_code::2} with {_message}
+      replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+      replace all "%%block%%" in {_code::2} with {_block}
+      replace all "%%gamemode%%" in {_code::2} with "%{_player}'s gamemode%"
+      replace all "%%health%%" in {_code::2} with "%{_player}'s health%"
+      replace all "%%hunger%%" in {_code::2} with "%{_player}'s hunger%"
+      replace all "%%xp%%" in {_code::2} with "%{_player}'s xp%"
+      replace all "%%uuid%%" in {_code::2} with {_player}'s uuid
+      replace all "%%loc%%" or "%%location%%" in {_code::2} with "%{_player}'s location%"
+      replace all "%%ip%%" in {_code::2} with {_player}'s ip
+      replace all "%%item%%" in {_code::2} with "%{_item}%"
+      replace all "%%chunk%%" in {_code::2} with "%{_chunk}%"
+      replace all "%%entity%%" in {_code::2} with {_entity}
+      if {_event} is "damage":
+        replace all "%%prefix.victim%%" in {_code::2} with formatted {_player}'s prefix
+        replace all "%%suffix.victim%%" in {_code::2} with formatted {_player}'s suffix
+        replace all "%%message%%" in {_code::2} with {_message}
+        replace all "%%nl%%" or "%%newline%%" in {_code::2} with newline
+        replace all "%%block%%" in {_code::2} with {_block}
+        replace all "%%gamemode.victim%%" in {_code::2} with "%{_victim}'s gamemode%"
+        replace all "%%health.victim%%" in {_code::2} with "%{_victim}'s health%"
+        replace all "%%hunger.victim%%" in {_code::2} with "%{_victim}'s hunger%"
+        replace all "%%xp.victim%%" in {_code::2} with "%{_victim}'s xp%"
+        replace all "%%uuid.victim%%" in {_code::2} with {_victim}'s uuid
+        replace all "%%loc.victim%%" or "%%location.victim%%" in {_code::3} with "%{_victim}'s location%"
+        replace all "%%ip.victim%%" in {_code::2} with {_victim}'s ip
+        replace all "%%item%%" in {_code::2} with "%{_item}%"
+        replace all "%%prefix.attacker%%" in {_code::2} with formatted {_attacker}'s prefix
+        replace all "%%suffix.attacker%%" in {_code::2} with formatted {_attacker}'s suffix
+        replace all "%%gamemode.attacker%%" in {_code::2} with "%{_attacker}'s gamemode%"
+        replace all "%%health.attacker%%" in {_code::2} with "%{_attacker}'s health%"
+        replace all "%%hunger.attacker%%" in {_code::2} with "%{_attacker}'s hunger%"
+        replace all "%%xp.attacker%%" in {_code::2} with "%{_attacker}'s xp%"
+        replace all "%%uuid.attacker%%" in {_code::2} with {_attacker}'s uuid
+        replace all "%%loc.attacker%%" or "%%location.attacker%%" in {_code::2} with "%{_attacker}'s location%"
+        replace all "%%ip.attacker%%" in {_code::2} with {_attacker}'s ip
+      send colored {_code::2} to console
+    else:
+      HydroLog("&cThe effect ""log"" needs to have 2 sections. Line: %{_line}%.&c Effect: %{_effect}%")
+  else:
+    HydroLog("&cUnknown effect. Line: %{_line}%.&c Effect: %{_effect}%")
+
+function HydroLog(t: string):
+  send "%newline%&8[&3Hydrogen&8] &f%formatted {_t}%" to console
+
+on load:
+  if file path "plugins/Hydrogen/" is missing:
+    create file path "plugins/Hydrogen/"
+    create file path "plugins/Hydrogen/Code/"
+    create file path "plugins/Hydrogen/Code/Example.txt" with content "on join: %%player%%,send,Hello %%player%%"
+    HydroLog("Created essential files.")
+  if file path "plugins/Skript/scripts/HydrogenAddons/" is missing:
+    create file path "plugins/Skript/scripts/HydrogenAddons/"
+  delete {Hydrogen::Addons::*}
+  loop all the files in file path "plugins/Skript/scripts/HydrogenAddons/":
+    delete {_named}
+    delete {_author}
+    delete {_version}
+    delete {_description}
+    delete {_i}
+    set {_file} to last element out of (split "%loop-value%" at "\")
+    set {_aa::*} to split {_file} at "."
+    set {_size} to size of {_aa::*}
+    delete {_aa::%{_size}%}
+    set {_name} to join {_aa::*} with "."
+    if first character of {_name} is "-":
+      set {_name} to subtext of {_name} from characters 2 to (length of {_name})
+    if last element out of (split {_file} at ".") is "sk":
+      set {_lines::*} to lines of file path "%loop-value%"
+      if size of {_lines::*} is more than or equal to 4:
+        if {_lines::1} is "options:":
+          if {_lines::2} starts with "  AddonName: ":
+            set {_named} to subtext of {_lines::2} from characters (length of " AddonName: " + 2) to (length of {_lines::2})
+            if {_lines::3} starts with "  AddonAuthor: ":
+              set {_author} to subtext of {_lines::3} from characters (length of " AddonAuthor: " + 2) to (length of {_lines::3})
+              if {_lines::4} starts with "  AddonVersion: ":
+                set {_version} to subtext of {_lines::4} from characters (length of " AddonVersion: " + 2) to (length of {_lines::4})
+                if {_lines::5} starts with "  AddonDescription: ":
+                  set {_description} to subtext of {_lines::5} from characters (length of " AddonDescription: " + 2) to (length of {_lines::5})
+                  set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                  set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                  set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                  set {Hydrogen::Addons::%{_named}%::description} to {_description}
+                  enable script "HydrogenAddons/%{_file}%"
+                  HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{_description}%")
+                else:
+                  set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                  set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                  set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                  set {Hydrogen::Addons::%{_named}%::description} to "None"
+                  enable script "HydrogenAddons/%{_file}%"
+                  HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{Hydrogen::Addons::%{_named}%::description}%")
+              else:
+                disable script "HydrogenAddons/%{_file}%"
+                HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon version.")
+            else:
+              disable script "HydrogenAddons/%{_file}%"
+              HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon author.")
+          else:
+            disable script "HydrogenAddons/%{_file}%"
+            HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon name.")
+        else:
+          disable script "HydrogenAddons/%{_file}%"
+          HydroLog("&c(%{_name}%) Addon was disabled. Reason: No options.")
+      else:
+        disable script "HydrogenAddons/%{_file}%"
+        HydroLog("&c(%{_name}%) Addon was disabled. Reason: Not enough lines to work.")
+    else:
+      disable script "HydrogenAddons/%{_file}%"
+      HydroLog("&c(%{_name}%) Addon was disabled. Reason: File path was not "".sk"".")
+  loop Hydrogen_callEvents("OnLoad: "):
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "load")
+
+on connect:
+  loop Hydrogen_callEvents("OnConnect: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      kick player
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        kick player
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "connect", ("player:%event-player%"))
+
+on join:
+  loop Hydrogen_callEvents("OnJoin: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      kick player
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        kick player
+      continue
+    else if {_a::1} is "join":
+      if {_a::2} is set:
+        replace all "%%player%%" in {_a::2} with "%player%"
+        replace all "%%prefix%%" in {_a::2} with formatted player's prefix
+        replace all "%%suffix%%" in {_a::2} with formatted player's suffix
+        replace all "%%nl%%" or "%%newline%%" in {_a::2} with newline
+        replace all "%%gamemode%%" in {_a::2} with "%player's gamemode%"
+        replace all "%%health%%" in {_a::2} with "%player's health%"
+        replace all "%%hunger%%" in {_a::2} with "%player's hunger%"
+        replace all "%%xp%%" in {_a::2} with "%player's xp%"
+        replace all "%%uuid%%" in {_a::2} with player's uuid
+        replace all "%%loc%%" or "%%location%%" in {_a::2} with "%player's location%"
+        replace all "%%ip%%" in {_a::2} with player's ip
+        set the join message to formatted {_a::2}
+        continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "join", ("player:%event-player%"))
+
+on first join:
+  loop Hydrogen_callEvents("OnFirstJoin: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      kick player
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        kick player
+      continue
+    else if {_a::1} is "join":
+      if {_a::2} is set:
+        replace all "%%player%%" in {_a::2} with "%player%"
+        replace all "%%prefix%%" in {_a::2} with formatted player's prefix
+        replace all "%%suffix%%" in {_a::2} with formatted player's suffix
+        replace all "%%nl%%" or "%%newline%%" in {_a::2} with newline
+        replace all "%%gamemode%%" in {_a::2} with "%player's gamemode%"
+        replace all "%%health%%" in {_a::2} with "%player's health%"
+        replace all "%%hunger%%" in {_a::2} with "%player's hunger%"
+        replace all "%%xp%%" in {_a::2} with "%player's xp%"
+        replace all "%%uuid%%" in {_a::2} with player's uuid
+        replace all "%%loc%%" or "%%location%%" in {_a::2} with "%player's location%"
+        replace all "%%ip%%" in {_a::2} with player's ip
+        set the join message to formatted {_a::2}
+        continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "firstJoin", ("player:%event-player%"))
+
+on quit:
+  loop Hydrogen_callEvents("OnQuit: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_a::1} is "quit":
+      if {_a::2} is set:
+        replace all "%%player%%" in {_a::2} with "%player%"
+        replace all "%%prefix%%" in {_a::2} with formatted player's prefix
+        replace all "%%suffix%%" in {_a::2} with formatted player's suffix
+        replace all "%%nl%%" or "%%newline%%" in {_a::2} with newline
+        replace all "%%gamemode%%" in {_a::2} with "%player's gamemode%"
+        replace all "%%health%%" in {_a::2} with "%player's health%"
+        replace all "%%hunger%%" in {_a::2} with "%player's hunger%"
+        replace all "%%xp%%" in {_a::2} with "%player's xp%"
+        replace all "%%uuid%%" in {_a::2} with player's uuid
+        replace all "%%loc%%" or "%%location%%" in {_a::2} with "%player's location%"
+        replace all "%%ip%%" in {_a::2} with player's ip
+        set the quit message to formatted {_a::2}
+        continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "quit", ("player:%event-player%"))
+
+on chat:
+  loop Hydrogen_callEvents("OnChat: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::1} is "chat":
+      if {_a::2} is set:
+        replace all "%%player%%" in {_a::2} with "%player%"
+        replace all "%%prefix%%" in {_a::2} with formatted player's prefix
+        replace all "%%suffix%%" in {_a::2} with formatted player's suffix
+        replace all "%%display%%" in {_a::2} with formatted player's display name
+        replace all "%%message%%" in {_a::2} with message
+        replace all "%%nl%%" or "%%newline%%" in {_a::2} with newline
+        replace all "%%gamemode%%" in {_a::2} with "%player's gamemode%"
+        replace all "%%health%%" in {_a::2} with "%player's health%"
+        replace all "%%hunger%%" in {_a::2} with "%player's hunger%"
+        replace all "%%xp%%" in {_a::2} with "%player's xp%"
+        replace all "%%uuid%%" in {_a::2} with player's uuid
+        replace all "%%loc%%" or "%%location%%" in {_a::2} with "%player's location%"
+        replace all "%%ip%%" in {_a::2} with player's ip
+        set the chat format to colored {_a::2}
+        continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      replace all "%%sender%%" in {_p} with "%sender%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "chat", ("player:%event-player%", "sender:%sender%", "message:%message%"))
+
+on break:
+  loop Hydrogen_callEvents("OnBreak: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "break", ("player:%event-player%", "block:%event-block%"))
+
+on place:
+  loop Hydrogen_callEvents("OnPlace: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "place", ("player:%event-player%", "block:%event-block%"))
+
+on jump:
+  loop Hydrogen_callEvents("OnJump: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "jump", ("player:%event-player%"))
+
+on flight toggle:
+  loop Hydrogen_callEvents("OnFlightToggle: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "flightToggle", ("player:%event-player%"))
+
+on elytra toggle:
+  loop Hydrogen_callEvents("OnElytraToggle: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "elytraToggle", ("player:%event-player%"))
+
+on explode:
+  loop Hydrogen_callEvents("OnExplode: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "explode", ("entity:%event-entity%"))
+
+on explosion prime:
+  loop Hydrogen_callEvents("OnExplosionPrime: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "explosionPrime", ("entity:%event-entity%"))
+
+on ignite:
+  loop Hydrogen_callEvents("OnIgnite: "):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "ignite", ("player:%event-player%", "block:%event-block%"))
+
+on death:
+  loop Hydrogen_callEvents("OnDeath:"):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    else if {_a::1} is "death":
+      if {_a::2} is set:
+        replace all "%%player%%" in {_a::2} with "%player%"
+        replace all "%%prefix%%" in {_a::2} with formatted player's prefix
+        replace all "%%suffix%%" in {_a::2} with formatted player's suffix
+        replace all "%%nl%%" or "%%newline%%" in {_a::2} with newline
+        replace all "%%gamemode%%" in {_a::2} with "%player's gamemode%"
+        replace all "%%health%%" in {_a::2} with "%player's health%"
+        replace all "%%hunger%%" in {_a::2} with "%player's hunger%"
+        replace all "%%xp%%" in {_a::2} with "%player's xp%"
+        replace all "%%uuid%%" in {_a::2} with player's uuid
+        replace all "%%loc%%" or "%%location%%" in {_a::2} with "%player's location%"
+        replace all "%%ip%%" in {_a::2} with player's ip
+        set the death message to formatted {_a::2}
+        continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "death", ("player:%event-player%"))
+
+on respawn:
+  loop Hydrogen_callEvents("OnRespawn:"):
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "respawn", ("player:%event-player%"))
+
+on damage:
+  loop Hydrogen_callEvents("OnDamage:"):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%attacker%%" in {_p} with "%attacker%"
+      replace all "%%victim%%" in {_p} with "%victim%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    if attacker is not set:
+      set {_attacker} to "%event-damagecause%"
+    else:
+      set {_attacker} to "%attacker%"
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "damage", ("attacker:%{_attacker}%", "victim:%victim%"))
+
+on drop:
+  loop Hydrogen_callEvents("OnDrop:"):
+    set {_cc::*} to split loop-value at ":"
+    delete {_cc::1}
+    set {_l} to join {_cc::*} with ":"
+    set {_a::*} to split {_l} at ","
+    if {_l} is "cancel":
+      cancel event
+      continue
+    else if {_a::2} is "cancel":
+      set {_p} to {_a::1}
+      replace all "%%player%%" in {_p} with "%player%"
+      set {_p} to {_a::1} parsed as an offline player
+      if {_p} is player:
+        cancel event
+      continue
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "drop", ("player:%event-player%", "item:%event-item%"))
+
+on chunk load:
+  loop Hydrogen_callEvents("OnChunkLoad:"):
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "chunkLoad", ("chunk:%event-chunk%"))
+
+on chunk unload:
+  loop Hydrogen_callEvents("OnChunkUnload:"):
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "chunkUnload", ("chunk:%event-chunk%"))
+
+
+on chunk generate:
+  loop Hydrogen_callEvents("OnChunkGenerate:"):
+    set {_rr::*} to split loop-value at ":"
+    set {_line} to first element out of {_rr::*}
+    delete {_rr::1}
+    set {_effect} to join {_rr::*} with ":"
+    Hydrogen_executeEffect({_line}, {_effect}, "chunkGenerate", ("chunk:%event-chunk%"))
+
+command /hydrogen [<string>] [<string>]:
+  aliases: /hydro
+  executable by: console
+  trigger:
+    if arg-1 is set:
+      if arg-1 is "list" or "addons":
+        if {Hydrogen::Addons::*} is set:
+          loop indices of {Hydrogen::Addons::*}:
+            add 1 to {_i}
+            set {_name} to {Hydrogen::Addons::%loop-value%::name}
+            set {_author} to {Hydrogen::Addons::%loop-value%::author}
+            set {_version} to {Hydrogen::Addons::%loop-value%::version}
+            set {_description} to {Hydrogen::Addons::%loop-value%::description}
+            add "&3(%{_i}%&3) &b%{_name}%&8:%nl%  &bAuthor&8: &7%{_author}%%nl%  &bVersion&8: &7%{_version}%%nl%  &bDescription&8: &7%{_description}%" to {_a::*}
+          set {_join} to join {_a::*} with newline
+          HydroLog("&bAddons:%newline%%{_join}%")
+        else:
+          HydroLog("&7There are no addons.")
+      else if arg-1 is "update":
+        set {_info} to text from "https://api.github.com/repos/PersonMaster/Hydrogen/releases/latest"
+        set {_info::*} to {_info} split at ","
+        set {_version} to {_info::28}
+        set {_info2::*} to {_version} split at ":"
+        if {_info2::*} is set:
+          set {_info2::2} to subtext of {_info2::2} from characters 2 to (length of {_info2::2}-1)
+          if {_info2::2} is not "{@version}":
+            if arg-2 is "download":
+              replace all """" with "" in {_info2::2}
+              HydroLog("&aDownloading new version. Version: %{_info2::2}%&a.")
+              download from url "https://github.com/PersonMaster/Hydrogen/releases/download/%{_info2::2}%/Hydrogen.sk" to file path "plugins/Skript/scripts/Hydrogen (1).sk":
+                HydroLog("&aDownloaded new version.")
+            else:
+              HydroLog("&aThere is a new version!%nl% &aCome get it at https://github.com/PersonMaster/Hydrogen/releases/latest")
+          else:
+            HydroLog("&aYou already have the latest version ({@version}&a).")
+        else:
+          HydroLog("&cThere was an error when checking for new updates. Please check for them manually. Current Version: {@version}&c.")
+      else if arg-1 is "info":
+        set {_info} to text from "https://api.github.com/repos/PersonMaster/Hydrogen/releases/latest"
+        set {_info::*} to {_info} split at ","
+        set {_version} to {_info::28}
+        set {_info2::*} to {_version} split at ":"
+        if {_info2::*} is set:
+          set {_info2::2} to subtext of {_info2::2} from characters 2 to (length of {_info2::2}-1)
+          HydroLog("&3Latest Version&8: &7%{_info2::2}%%newline%&3Current Version&8: &7{@version}")
+        else:
+          HydroLog("&3Latest Version&8: &cError%newline%&3Current Version&8: &7{@version}")
+      else if arg-1 is "refresh":
+        delete {Hydrogen::Addons::*}
+        loop all the files in file path "plugins/Skript/scripts/HydrogenAddons/":
+          delete {_named}
+          delete {_author}
+          delete {_version}
+          delete {_description}
+          delete {_i}
+          set {_file} to last element out of (split "%loop-value%" at "\")
+          set {_aa::*} to split {_file} at "."
+          set {_size} to size of {_aa::*}
+          delete {_aa::%{_size}%}
+          set {_name} to join {_aa::*} with "."
+          if first character of {_name} is "-":
+            set {_name} to subtext of {_name} from characters 2 to (length of {_name})
+          if last element out of (split {_file} at ".") is "sk":
+            set {_lines::*} to lines of file path "%loop-value%"
+            if size of {_lines::*} is more than or equal to 4:
+              if {_lines::1} is "options:":
+                if {_lines::2} starts with "  AddonName: ":
+                  set {_named} to subtext of {_lines::2} from characters (length of " AddonName: " + 2) to (length of {_lines::2})
+                  if {_lines::3} starts with "  AddonAuthor: ":
+                    set {_author} to subtext of {_lines::3} from characters (length of " AddonAuthor: " + 2) to (length of {_lines::3})
+                    if {_lines::4} starts with "  AddonVersion: ":
+                      set {_version} to subtext of {_lines::4} from characters (length of " AddonVersion: " + 2) to (length of {_lines::4})
+                      if {_lines::5} starts with "  AddonDescription: ":
+                        set {_description} to subtext of {_lines::5} from characters (length of " AddonDescription: " + 2) to (length of {_lines::5})
+                        set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                        set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                        set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                        set {Hydrogen::Addons::%{_named}%::description} to {_description}
+                        enable script "HydrogenAddons/%{_file}%"
+                        HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{_description}%")
+                      else:
+                        set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                        set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                        set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                        set {Hydrogen::Addons::%{_named}%::description} to "None"
+                        enable script "HydrogenAddons/%{_file}%"
+                        HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{Hydrogen::Addons::%{_named}%::description}%")
+                    else:
+                      disable script "HydrogenAddons/%{_file}%"
+                      HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon version.")
+                  else:
+                    disable script "HydrogenAddons/%{_file}%"
+                    HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon author.")
+                else:
+                  disable script "HydrogenAddons/%{_file}%"
+                  HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon name.")
+              else:
+                disable script "HydrogenAddons/%{_file}%"
+                HydroLog("&c(%{_name}%) Addon was disabled. Reason: No options.")
+            else:
+              disable script "HydrogenAddons/%{_file}%"
+              HydroLog("&c(%{_name}%) Addon was disabled. Reason: Not enough lines to work.")
+          else:
+            disable script "HydrogenAddons/%{_file}%"
+            HydroLog("&c(%{_name}%) Addon was disabled. Reason: File path was not "".sk"".")
+      else if arg-1 is "reload" or "r":
+        if arg-2 is set:
+          delete {Hydrogen::Addons::%arg-2%::*}
+          loop all the files in file path "plugins/Skript/scripts/HydrogenAddons/":
+            delete {_named}
+            delete {_author}
+            delete {_version}
+            delete {_description}
+            delete {_i}
+            set {_file} to last element out of (split "%loop-value%" at "\")
+            set {_aa::*} to split {_file} at "."
+            set {_size} to size of {_aa::*}
+            delete {_aa::%{_size}%}
+            set {_name} to join {_aa::*} with "."
+            if first character of {_name} is "-":
+              set {_name} to subtext of {_name} from characters 2 to (length of {_name})
+            if last element out of (split {_file} at ".") is "sk":
+              set {_lines::*} to lines of file path "%loop-value%"
+              if size of {_lines::*} is more than or equal to 4:
+                if {_lines::1} is "options:":
+                  if {_lines::2} starts with "  AddonName: ":
+                    set {_named} to subtext of {_lines::2} from characters (length of " AddonName: " + 2) to (length of {_lines::2})
+                    if {_lines::3} starts with "  AddonAuthor: ":
+                      set {_author} to subtext of {_lines::3} from characters (length of " AddonAuthor: " + 2) to (length of {_lines::3})
+                      if {_lines::4} starts with "  AddonVersion: ":
+                        set {_version} to subtext of {_lines::4} from characters (length of " AddonVersion: " + 2) to (length of {_lines::4})
+                        if {_lines::5} starts with "  AddonDescription: ":
+                          set {_description} to subtext of {_lines::5} from characters (length of " AddonDescription: " + 2) to (length of {_lines::5})
+                          if arg-2 is {_named}:
+                            set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                            set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                            set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                            set {Hydrogen::Addons::%{_named}%::description} to {_description}
+                            enable script "HydrogenAddons/%{_file}%"
+                            HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{_description}%")
+                            set {_ok} to true
+                        else:
+                          if arg-2 is {_named}:
+                            set {Hydrogen::Addons::%{_named}%::name} to {_named}
+                            set {Hydrogen::Addons::%{_named}%::author} to {_author}
+                            set {Hydrogen::Addons::%{_named}%::version} to {_version}
+                            set {Hydrogen::Addons::%{_named}%::description} to "None"
+                            enable script "HydrogenAddons/%{_file}%"
+                            HydroLog("&a(%{_name}%&a) Addon was enabled.%nl%&a  Name: %{_name}%%nl%&a  Author: %{_author}%%nl%&a  Version: %{_version}%%nl%&a  Description: %{Hydrogen::Addons::%{_named}%::description}%")
+                            set {_ok} to true
+                      else:
+                        if arg-2 is {_named}:
+                          disable script "HydrogenAddons/%{_file}%"
+                          HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon version.")
+                          set {_ok} to true
+                    else:
+                      if arg-2 is {_named}:
+                        disable script "HydrogenAddons/%{_file}%"
+                        HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon author.")
+                        set {_ok} to true
+                  else:
+                    if arg-2 is {_named}:
+                      disable script "HydrogenAddons/%{_file}%"
+                      HydroLog("&c(%{_name}%) Addon was disabled. Reason: No addon name.")
+                      set {_ok} to true
+                else:
+                  if arg-2 is {_named}:
+                    disable script "HydrogenAddons/%{_file}%"
+                    HydroLog("&c(%{_name}%) Addon was disabled. Reason: No options.")
+                    set {_ok} to true
+              else:
+                if arg-2 is {_named}:
+                  disable script "HydrogenAddons/%{_file}%"
+                  HydroLog("&c(%{_name}%) Addon was disabled. Reason: Not enough lines to work.")
+                  set {_ok} to true
+            else:
+              if arg-2 is {_named}:
+                disable script "HydrogenAddons/%{_file}%"
+                HydroLog("&c(%{_name}%) Addon was disabled. Reason: File path was not "".sk"".")
+                set {_ok} to true
+          if {_ok} is not set:
+            HydroLog("&cNo addon found (%arg-2%&c).")
+        else:
+          HydroLog("&cInvalid arguments. /hydro reload (addon)")
+      else:
+        HydroLog("Usage: &8( and ) means required, [ and ] means optional%nl%&b/hydro &3(addons/update/info/refresh/reload) [value]%nl%&b/hydro &3update [download]%nl%&b/hydro &3reload (addon)")
+    else:
+      HydroLog("Usage: &8( and ) means required, [ and ] means optional%nl%&b/hydro &3(addons/update/info/refresh/reload) [value]%nl%&b/hydro &3update [download]%nl%&b/hydro &3reload (addon)")
