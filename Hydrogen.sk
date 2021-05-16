@@ -5,7 +5,7 @@
 #
 #   (!) DO NOT CHANGE (!)
 options:
-  version: releases
+  version: 1.0
 #   (!) DO NOT CHANGE (!)
 #
 # [=] Script - Hydrogen
