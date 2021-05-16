@@ -5,7 +5,7 @@
 #
 #   (!) DO NOT CHANGE (!)
 options:
-  version: 1.0
+  version: 1.0-Bugs
 #   (!) DO NOT CHANGE (!)
 #
 # [=] Script - Hydrogen
@@ -640,7 +640,7 @@ on load:
   if file path "plugins/Hydrogen/" is missing:
     create file path "plugins/Hydrogen/"
     create file path "plugins/Hydrogen/Code/"
-    create file path "plugins/Hydrogen/Code/Example.txt" with content "on join: %%player%%,send,Hello %%player%%"
+    create file path "plugins/Hydrogen/Code/Example.txt" with content "OnJoin: join,Hello %%player%%"
     HydroLog("Created essential files.")
   if file path "plugins/Skript/scripts/HydrogenAddons/" is missing:
     create file path "plugins/Skript/scripts/HydrogenAddons/"
